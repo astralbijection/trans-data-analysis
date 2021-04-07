@@ -34,7 +34,7 @@ candidates = [
 
 @pytest.mark.parametrize('candidate', candidates)
 def test_scrapes_vote_match(candidate: TestCase):
-    soup = bs4.BeautifulSoup(candidate.html, "html")
+    soup = bs4.BeautifulSoup(candidate.html, features="lxml")
 
     result = scrape_vote_match(soup)
 
@@ -43,7 +43,7 @@ def test_scrapes_vote_match(candidate: TestCase):
 
 @pytest.mark.parametrize('candidate', candidates)
 def test_scrapes_name(candidate: TestCase):
-    soup = bs4.BeautifulSoup(candidate.html, "html")
+    soup = bs4.BeautifulSoup(candidate.html, features="lxml")
 
     result = get_name(soup)
 
@@ -52,7 +52,7 @@ def test_scrapes_name(candidate: TestCase):
 
 @pytest.mark.parametrize('candidate', candidates)
 def test_scrapes_ballotpedia(candidate: TestCase):
-    soup = bs4.BeautifulSoup(candidate.html, "html")
+    soup = bs4.BeautifulSoup(candidate.html, features="lxml")
 
     result = get_ballotpedia(soup)
 

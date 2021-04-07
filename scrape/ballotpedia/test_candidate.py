@@ -34,7 +34,7 @@ candidates = [
 
 @pytest.mark.parametrize('candidate', candidates)
 def test_scrapes_twitters(candidate: TestCase):
-    soup = bs4.BeautifulSoup(candidate.html, "html")
+    soup = bs4.BeautifulSoup(candidate.html, features="lxml")
 
     result = get_twitters(soup)
 
@@ -43,7 +43,7 @@ def test_scrapes_twitters(candidate: TestCase):
 
 @pytest.mark.parametrize('candidate', candidates)
 def test_scrapes_party(candidate: TestCase):
-    soup = bs4.BeautifulSoup(candidate.html, "html")
+    soup = bs4.BeautifulSoup(candidate.html, features="lxml")
 
     result = get_party(soup)
 

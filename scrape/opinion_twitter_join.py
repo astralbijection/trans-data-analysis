@@ -28,7 +28,7 @@ async def fetch_politician(client: ClientSession, ontheissues_uri: str):
     async with client.get(ballotpedia) as response:
         html = await response.text()
 
-    soup = bs4.BeautifulSoup(html, 'html')
+    soup = bs4.BeautifulSoup(html, features="lxml")
     party = get_party(soup)
     twitters = get_twitters(soup)
 
