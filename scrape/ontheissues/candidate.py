@@ -46,3 +46,8 @@ def get_name(soup: bs4.BeautifulSoup):
     match = re.match(r'(.+) on the Issues', title)
 
     return match.group(1)
+
+
+def get_ballotpedia(soup):
+    link: bs4.Tag = soup.find('a', text='Ballotpedia')
+    return link.attrs.get('href')
