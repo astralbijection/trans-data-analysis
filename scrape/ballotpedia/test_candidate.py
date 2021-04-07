@@ -29,6 +29,12 @@ candidates = [
         html=(TEST_DIR / "Hillary_Clinton.html").read_text(encoding='ISO-8859-1'),
         twitters=[('Twitter', 'HillaryClinton')],
     ),
+    TestCase(
+        name='Tim Pawlenty',
+        party='Republican',
+        html=(TEST_DIR / "Tim_Pawlenty.html").read_text(encoding='ISO-8859-1'),
+        twitters=[('Personal Twitter', 'TimPawlenty')],
+    ),
 ]
 
 

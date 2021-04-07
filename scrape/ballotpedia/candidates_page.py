@@ -31,7 +31,7 @@ def get_candidates(soup: bs4.BeautifulSoup):
     return links[trump_i:dnc_i] + links[hw_bush_i:home_i]
 
 
-def get_uris():
+def get_politician_urls():
     test_dir = Path("resources/test/ontheissues/")
     html = (test_dir / "Candidates.htm").read_text(encoding='ISO-8859-1')
     result = get_candidates(bs4.BeautifulSoup(html, features="lxml"))
@@ -39,4 +39,7 @@ def get_uris():
 
 
 if __name__ == '__main__':
-    print(get_uris())
+    urls = (url + '\n' for _, url in get_politician_urls())
+    with open('urls.txt', 'w') as file:
+        file.writelines(urls)
+

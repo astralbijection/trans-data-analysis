@@ -1,6 +1,7 @@
 import asyncio
+import json
 from collections import namedtuple
-from typing import List
+from typing import Iterable
 
 import bs4
 from aiohttp import ClientSession
@@ -17,22 +18,26 @@ Politician = namedtuple(
 
 async def fetch_politician(client: ClientSession, ontheissues_uri: str):
     async with client.get(ontheissues_uri) as response:
-        print(f'Fetching {ontheissues_uri}')
         html = await response.text()
+        print(f'Fetched OTI {ontheissues_uri}')
 
-    soup = bs4.BeautifulSoup(html, 'html')
+    soup = bs4.BeautifulSoup(html, features='lxml')
+    ballotpedia = get_ballotpedia(soup)
+    assert ballotpedia is not None, 'No ballotpedia'
+
     vote_match = scrape_vote_match(soup)
     name = get_name(soup)
-    ballotpedia = get_ballotpedia(soup)
+    print(f'Name: {name}; Ballotpedia: {ballotpedia}; Stances: {vote_match}')
 
     async with client.get(ballotpedia) as response:
         html = await response.text()
+        print(f'Fetched Ballotpedia {ontheissues_uri}')
 
     soup = bs4.BeautifulSoup(html, features="lxml")
     party = get_party(soup)
     twitters = get_twitters(soup)
 
-    return Politician(
+    result = Politician(
         name=name,
         vote_match=vote_match,
         ontheissues=ontheissues_uri,
@@ -41,8 +46,12 @@ async def fetch_politician(client: ClientSession, ontheissues_uri: str):
         twitters=twitters,
     )
 
+    print('Got result %s', result)
 
-async def fetch_politicians(ontheissues_uris: List[str]):
+    return result
+
+
+async def fetch_politicians(ontheissues_uris: Iterable[str]):
     throttler = Throttler(rate_limit=0.2)
 
     async with ClientSession() as client:
@@ -59,12 +68,24 @@ async def fetch_politicians(ontheissues_uris: List[str]):
 
 
 async def main():
-    responses = await fetch_politicians(
-        ['https://www.ontheissues.org/Stacey_Abrams.htm',
-         'https://www.ontheissues.org/Hillary_Clinton.htm'])
-    print('Got responses')
-    for i in responses:
-        print(repr(i))
+    await fetch_single()
+    with open('urls.txt', 'r') as files:
+        urls = {url.strip() for url in files.readlines()}
+
+    print(f'Fetching {len(urls)} urls')
+    responses = await fetch_politicians(urls)
+
+    with open('data.json', 'wb') as file:
+        data = [
+            dict(r) if isinstance(r, Politician) else repr(r)
+            for r in responses
+        ]
+        json.dump(data, file)
+
+
+async def fetch_single():
+    async with ClientSession() as client:
+        print(await fetch_politician(client, 'https://www.ontheissues.org/Mark_Sanford.htm'))
 
 
 if __name__ == '__main__':

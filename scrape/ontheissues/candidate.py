@@ -7,6 +7,7 @@ NORMALIZE_STANCE = {
     'Strongly Favors': 4,
     'Favors': 3,
     'No opinion on': 2,
+    'Neutral on': 2,
     'Opposes': 1,
     'Strongly Opposes': 0,
 }
@@ -31,6 +32,7 @@ def scrape_vote_match(soup: bs4.BeautifulSoup):
     rows: List[bs4.Tag] = table.findChildren('tr')
 
     topics = [scrape_vote_match_row(r) for r in rows[2:]]
+    topics.sort(key=lambda x: x[0])
 
     assert all(
         topic_n - 1 == i
@@ -50,4 +52,6 @@ def get_name(soup: bs4.BeautifulSoup):
 
 def get_ballotpedia(soup):
     link: bs4.Tag = soup.find('a', text='Ballotpedia')
+    if link is None:
+        return None
     return link.attrs.get('href')
