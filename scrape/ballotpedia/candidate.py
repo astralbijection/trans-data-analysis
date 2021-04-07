@@ -1,3 +1,4 @@
+import re
 from urllib.parse import urlparse
 
 import bs4
@@ -34,3 +35,9 @@ def get_twitters(soup: bs4.BeautifulSoup):
     ]
 
     return twitters
+
+
+def get_party(soup: bs4.BeautifulSoup):
+    infobox = get_infobox(soup)
+    text = infobox.get_text()
+    return re.search(r'(.+) Party', text).group(1).strip()
