@@ -3,3 +3,4 @@ coverage
 aiohttp
 requests
 pytest
+asyncio-throttle
