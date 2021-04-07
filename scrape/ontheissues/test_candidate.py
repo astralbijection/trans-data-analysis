@@ -4,7 +4,7 @@ from pathlib import Path
 import bs4
 import pytest
 
-from scrape.ontheissues.candidate import scrape_vote_match
+from scrape.ontheissues.candidate import *
 
 TEST_DIR = Path("resources/test/ontheissues/")
 
@@ -27,9 +27,19 @@ candidates = [
 
 
 @pytest.mark.parametrize('candidate', candidates)
-def test_scrapes_vote_match_from_candidate_page(candidate: TestCase):
+def test_scrapes_vote_match(candidate: TestCase):
     soup = bs4.BeautifulSoup(candidate.html, "html")
 
     result = scrape_vote_match(soup)
 
     assert result == candidate.stances
+
+
+@pytest.mark.parametrize('candidate', candidates)
+def test_scrapes_name(candidate: TestCase):
+    soup = bs4.BeautifulSoup(candidate.html, "html")
+
+    result = get_name(soup)
+
+    assert result == candidate.name
+
