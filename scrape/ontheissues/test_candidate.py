@@ -23,6 +23,12 @@ candidates = [
         stances=[0, 0, 1, 4, 0, 3, 4, 3, 3, 4, 0, 0, 4, 4, 4, 1, 1, 0, 4, 1],
         ballotpedia='https://ballotpedia.org/Mike_Pence'
     ),
+    TestCase(
+        name='Hillary Clinton',
+        html=(TEST_DIR / "Hillary_Clinton.htm").read_text(encoding='ISO-8859-1'),
+        stances=[4, 4, 4, 3, 4, 0, 0, 0, 1, 0, 4, 4, 1, 1, 2, 4, 1, 4, 1, 4],
+        ballotpedia='https://ballotpedia.org/Hillary_Clinton'
+    ),
 ]
 
 
