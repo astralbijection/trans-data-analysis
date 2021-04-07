@@ -1,15 +1,35 @@
+from collections import namedtuple
+from pathlib import Path
+
 import bs4
+import pytest
 
 from scrape.ontheissues.candidate import scrape_vote_match
 
-stacey_abrams = [4, 3, 4, 0, 4, 4, 1, 1, 1, 0, 4, 4, 4, 0, 3, 4, 0, 4, 2, 4]
+TEST_DIR = Path("resources/test/ontheissues/")
+
+TestCase = namedtuple('TestCase', 'name html stances ballotpedia')
+
+candidates = [
+    TestCase(
+        name='Stacey Abrams',
+        html=(TEST_DIR / "Stacey_Abrams.htm").read_text(encoding='ISO-8859-1'),
+        stances=[4, 3, 4, 0, 4, 4, 1, 1, 1, 0, 4, 4, 4, 0, 3, 4, 0, 4, 2, 4],
+        ballotpedia='https://ballotpedia.org/Stacey_Abrams'
+    ),
+    TestCase(
+        name='Mike Pence',
+        html=(TEST_DIR / "Mike_Pence.htm").read_text(encoding='ISO-8859-1'),
+        stances=[0, 0, 1, 4, 0, 3, 4, 3, 3, 4, 0, 0, 4, 4, 4, 1, 1, 0, 4, 1],
+        ballotpedia='https://ballotpedia.org/Mike_Pence'
+    ),
+]
 
 
-def test_scrapes_vote_match_from_candidate_page():
-    with open("resources/test/ontheissues/Stacey_Abrams.htm", encoding='ISO-8859-1') as file:
-        markup = file.read()
-    soup = bs4.BeautifulSoup(markup, "html")
+@pytest.mark.parametrize('candidate', candidates)
+def test_scrapes_vote_match_from_candidate_page(candidate: TestCase):
+    soup = bs4.BeautifulSoup(candidate.html, "html")
 
     result = scrape_vote_match(soup)
 
-    assert result == stacey_abrams
+    assert result == candidate.stances

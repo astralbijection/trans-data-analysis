@@ -1,1 +1,5 @@
 beautifulsoup4
+coverage
+aiohttp
+requests
+pytest

@@ -38,3 +38,11 @@ def scrape_vote_match(soup: bs4.BeautifulSoup):
     ), 'Topic numbers do not match up with indices!'
 
     return [stance for _, stance in topics]
+
+
+def get_name(soup: bs4.BeautifulSoup):
+    title = soup.find('title').get_text(strip=True)
+
+    match = re.match(r'(.+) on the Issues', title)
+
+    return match.group(1)
