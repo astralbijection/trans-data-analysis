@@ -1,0 +1,2 @@
+resources/test/**/* linguist-vendored=true
+data/* linguist-vendored=true
