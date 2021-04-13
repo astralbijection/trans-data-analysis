@@ -15,8 +15,8 @@ Politician = namedtuple(
     'name vote_match ontheissues ballotpedia party twitters'
 )
 
-oti_throttler = Throttler(rate_limit=60, period=1)
-ballotpedia_throttler = Throttler(rate_limit=60, period=1)
+oti_throttler = Throttler(rate_limit=30, period=1)
+ballotpedia_throttler = Throttler(rate_limit=30, period=1)
 
 
 async def fetch_politician(client: ClientSession, ontheissues_uri: str):
@@ -26,10 +26,18 @@ async def fetch_politician(client: ClientSession, ontheissues_uri: str):
 
     soup = bs4.BeautifulSoup(html, features='lxml')
     name = get_name(soup)
-    ballotpedia = get_ballotpedia(soup)
-    assert ballotpedia is not None, f'{name} has no ballotpedia'
-
     vote_match = scrape_vote_match(soup)
+    ballotpedia = get_ballotpedia(soup)
+    if ballotpedia is None:
+        return Politician(
+            name=name,
+            vote_match=vote_match,
+            ontheissues=ontheissues_uri,
+            ballotpedia=ballotpedia,
+            party=None,
+            twitters=[],
+        )
+
     print(f'Name: {name}; Ballotpedia: {ballotpedia}; Stances: {vote_match}')
 
     async with ballotpedia_throttler, client.get(ballotpedia) as response:
@@ -65,7 +73,6 @@ async def fetch_politicians(ontheissues_uris: Iterable[str]):
 
 
 async def main():
-    #await fetch_single()
     with open('urls.txt', 'r') as files:
         urls = {url.strip() for url in files.readlines()}
 
@@ -75,8 +82,9 @@ async def main():
     with open('politicians.json', 'w') as file:
         # noinspection PyProtectedMember
         data = [
-            r._asdict() if isinstance(r, Politician) else repr(r)
+            r._asdict()
             for r in responses
+            if isinstance(r, Politician)
         ]
         json.dump(data, file, indent=2)
 

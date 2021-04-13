@@ -19,7 +19,7 @@ def scrape_contact(tag: bs4.Tag):
 def get_handle_from_href(href: str):
     url = urlparse(href)
     assert url.hostname in ('twitter.com', 'www.twitter.com'), 'Non-twitter URL'
-    handle = url.path.replace('/', '')
+    handle = url.path.split('/')[1]
     return handle
 
 
@@ -31,7 +31,7 @@ def get_infobox_twitters(soup: bs4.BeautifulSoup):
     print(contact)
     contacts = [scrape_contact(tag) for tag in contact.find_next_siblings()]
     twitters = [
-        (name, get_handle_from_href(href))
+        {'name': name, 'handle': get_handle_from_href(href)}
         for name, href in contacts
         if 'twitter' in name.lower()
     ]
@@ -54,7 +54,7 @@ def get_external_links_twitters(soup: bs4.BeautifulSoup):
         except AssertionError:
             continue
 
-        twitters.append((name, handle))
+        twitters.append({'name': name, 'handle': handle})
 
     return twitters
 

@@ -4,3 +4,4 @@ aiohttp
 requests
 pytest
 asyncio-throttle
+twitter
