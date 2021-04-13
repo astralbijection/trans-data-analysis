@@ -5,3 +5,7 @@ requests
 pytest
 asyncio-throttle
 twitter
+pandas
+numpy
+scikit-learn
+gensim
