@@ -4,8 +4,10 @@ aiohttp
 requests
 pytest
 asyncio-throttle
-twitter
+python-twitter
 pandas
 numpy
 scikit-learn
 gensim
+python-dotenv
+tweepy
