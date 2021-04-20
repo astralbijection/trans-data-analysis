@@ -271,3 +271,4 @@ Thumbs.db
 # End of https://www.toptal.com/developers/gitignore/api/python,pycharm,data
 
 *.env
+.twarc

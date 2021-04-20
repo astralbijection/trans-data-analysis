@@ -11,3 +11,4 @@ scikit-learn
 gensim
 python-dotenv
 tweepy
+jsonlines
