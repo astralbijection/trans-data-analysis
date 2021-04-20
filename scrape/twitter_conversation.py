@@ -17,7 +17,7 @@ def get_politicians(filepath):
         return json.load(file)
 
 
-def read_timelines(after_date: datetime, handles: List[str]):
+def read_timelines(after_date: datetime, handles: List[str], with_replies=False):
     consumer_key = os.environ.get('consumer_key')
     consumer_secret = os.environ.get('consumer_secret')
     access_token_key = os.environ.get('access_token_key')
@@ -29,10 +29,18 @@ def read_timelines(after_date: datetime, handles: List[str]):
         for tweet in twarc.timeline(screen_name=handle):
             created_at = parse_twitter_datetime(tweet['created_at'])
             print(f'Found tweet created at @{created_at}')
-            yield tweet
+
             if created_at <= after_date:
                 break
 
+            if not with_replies:
+                yield tweet
+                continue
+
+            # Fetch tweet replies
+            for reply in twarc.replies(tweet, recursive=True):
+                print(f'Got reply {reply["id"]}')
+                yield reply
 
 def main():
     politicians = get_politicians('../data/politicians.json')
@@ -40,7 +48,7 @@ def main():
 
     with jsonlines.open('../data/tweetdata.jsonl', 'w') as writer:
         earliest_date = datetime(2021, 3, 15)
-        for tweet in read_timelines(earliest_date, handles):
+        for tweet in read_timelines(earliest_date, handles, with_replies=True):
             writer.write(tweet)
 
 
