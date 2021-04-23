@@ -273,3 +273,4 @@ Thumbs.db
 *.jsonl
 *.env
 .twarc
+*.gz

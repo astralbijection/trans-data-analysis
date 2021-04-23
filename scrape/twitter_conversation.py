@@ -3,13 +3,10 @@ import os
 from datetime import datetime
 from pprint import pprint
 from typing import List
-import requests
+
 import jsonlines
-import twarc
-import tweepy
 import twitter
 from dotenv import load_dotenv
-from requests_oauthlib import OAuth1Session
 from twarc import Twarc
 
 
@@ -22,38 +19,33 @@ def get_politicians(filepath):
         return json.load(file)
 
 
-def read_timelines(after_date: datetime, handles: List[str], with_replies=False):
+def read_timelines(after_date: datetime, handles: List[str]):
     consumer_key = os.environ.get('CONSUMER_KEY')
     consumer_secret = os.environ.get('CONSUMER_SECRET')
     access_token_key = os.environ.get('ACCESS_TOKEN')
     access_token_secret = os.environ.get('ACCESS_TOKEN_SECRET')
-    bearer_token = os.environ.get('BEARER_TOKEN')
+    # bearer_token = os.environ.get('BEARER_TOKEN')
 
-    tw = twarc.Twarc(consumer_key, consumer_secret, access_token_key, access_token_secret, bearer_token)
+    twarc = Twarc(consumer_key, consumer_secret, access_token_key, access_token_secret)
 
-    for tweet in tw.search('Dawkins'):
-        yield tweet
-
-        created_at = parse_twitter_datetime(tweet['created_at'])
-        print(f'Found tweet {tweet["id"]} created at {created_at}')
-
-        if created_at <= after_date:
-            break
-
-
-def store_tweets(tweets):
-    with jsonlines.open('../data/tweetdata.jsonl', 'w') as writer:
-        for tweet in tweets:
-            writer.write(tweet)
+    for handle in handles:
+        print(f'Scanning twitter handle @{handle}')
+        for tweet in twarc.timeline(screen_name=handle):
+            created_at = parse_twitter_datetime(tweet['created_at'])
+            print(f'Found tweet created at @{created_at}')
+            yield tweet
+            if created_at <= after_date:
+                break
 
 
 def main():
     politicians = get_politicians('../data/politicians.json')
     handles = [handle['handle'] for p in politicians for handle in p['twitters']]
 
-    earliest_date = datetime(2021, 4, 9)
-    tweets = read_timelines(earliest_date, handles, with_replies=True)
-    store_tweets(tweets)
+    with jsonlines.open('../data/tweetdata.jsonl', 'w') as writer:
+        earliest_date = datetime(2020, 1, 1)
+        for tweet in read_timelines(earliest_date, handles):
+            writer.write(tweet)
 
 
 if __name__ == '__main__':
