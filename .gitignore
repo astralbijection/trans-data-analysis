@@ -274,3 +274,5 @@ Thumbs.db
 *.env
 .twarc
 *.gz
+/models/*
+!/models/.gitkeep
