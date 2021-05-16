@@ -64,7 +64,7 @@ def clean_tweet_tokens(token_list):
     return token_list
 
 
-tokenizer = TweetTokenizer(strip_handles=True)
+tokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
 lemmatizer = WordNetLemmatizer()
 
 
