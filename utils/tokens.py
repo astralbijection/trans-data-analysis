@@ -56,26 +56,22 @@ def is_token(token: str, stopwords):
     )) and token not in stopwords
 
 
-def clean_tweet_tokens(token_list):
-    token_list = sublist_replacement(token_list, ['covid', '-', '19'], ['covid19'])
-    token_list = sublist_replacement(token_list, ['covid', '19'], ['covid19'])
-    token_list = sublist_replacement(token_list, ['covid'], ['covid19'])
-    token_list = sublist_replacement(token_list, ['bears', 'ears'], ['bears ears'])
-    return token_list
-
-
 tokenizer = TweetTokenizer(strip_handles=True, reduce_len=True)
 lemmatizer = WordNetLemmatizer()
 
 
 def tokenize_tweet(tweet, stopwords):
-    tokens = [tok.lower() for tok in tokenizer.tokenize(tweet)]
-    tokens = [
+    tokens = (tok.lower() for tok in tokenizer.tokenize(tweet))
+    lemmatized = (
         lemmatizer.lemmatize(tok)
-        for tok in clean_tweet_tokens(tokens)
+        for tok in tokens
+    )
+    filtered = (
+        tok for tok in lemmatized
         if is_token(tok, stopwords)
-    ]
-    return tokens
+    )
+
+    return list(filtered)
 
 
 def tokenize_tweets(tweets, stopwords):
